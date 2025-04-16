@@ -1,17 +1,34 @@
 ```mermaid
 sequenceDiagram
-    box
+    box Browser
     participant browser
+    end
+
+    box Server
     participant server
     end
-    box
-    backend
-    database
+
+    box Backend Logic
+    participant backend
+    participant memory
     end
+
+    browser->> server: POST { "content": "HTML is easy" } , https://studies.cs.helsinki.fi/exampleapp/notes
+    activate server
+    server-->> backend: { "content": "HTML is easy" }
+
+    backend-->> memory: notes.push({ content: req.body.note, date: new Date() }
+    memory-->> backend: Save note to notes array
+
+    backend-->> server: res.redirect('/notes')
+
+    server-->> browser: 302 Found 
+    deactivate server
+
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
-    server-->> backend
+    server-->>browser: HTML document
     deactivate server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
